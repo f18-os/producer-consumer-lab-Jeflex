@@ -8,7 +8,7 @@
 ```
 sudo python3 ./MultiThreadPC.py
 ```
-Notice the output inside the shell. of each thread operating independently.
+Notice the output inside the shell showing each thread operating independently.
 
 **Changing the Clip** <br />
 If you want to change the clip you're processing you'll need to change some variables.
@@ -16,7 +16,7 @@ If you want to change the clip you're processing you'll need to change some vari
 ```
 atom MultiThreadPC.py
 ```
- Change line 12
+>Change line 12
 ```
 # filename of clip to load
 filename = 'YOURCLIP.mp4'
