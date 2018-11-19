@@ -17,8 +17,8 @@ BUF_SIZE = 10
 extractionQueue = queue.Queue(BUF_SIZE)
 convertQueue = queue.Queue(BUF_SIZE)
 
-lock1 = threading.RLock()
-lock2 = threading.RLock()
+# lock1 = threading.RLock()
+# lock2 = threading.RLock()
 
 
 
@@ -51,9 +51,9 @@ class ProducerThreadExtract(threading.Thread):
                 jpgAsText = base64.b64encode(jpgImage)
 
                 # add the frame to the buffer
-                lock1.acquire()
+                # lock1.acquire()
                 extractionQueue.put(jpgAsText)
-                lock1.release()
+                # lock1.release()
                 success,image = vidcap.read()
                 print("Extraction of frame {} {} ".format(count, success))
                 count += 1
@@ -75,9 +75,9 @@ class ConsumerProducerThreadConvert(threading.Thread):
         while True:
             if not extractionQueue.empty():
                 # load the next file
-                lock1.acquire()
+                # lock1.acquire()
                 inputFrame = extractionQueue.get()
-                lock1.release()
+                # lock1.release()
 
                 print("Converting frame {}".format(count))
                 jpgRawImage = base64.b64decode(inputFrame)
@@ -96,10 +96,10 @@ class ConsumerProducerThreadConvert(threading.Thread):
                 #encode the frame as base 64 to make debugging easier
                 jpgGreyAsText = base64.b64encode(jpgImageGrey)
                 if not convertQueue.full():
-                    lock2.acquire()
+                    # lock2.acquire()
                     # write output file
                     convertQueue.put(jpgGreyAsText)
-                    lock2.release()
+                    # lock2.release()
                 count += 1
 
         return
@@ -120,9 +120,9 @@ class ConsumerThreadDisplay(threading.Thread):
         while True:
             if not convertQueue.empty():
                 # get the next frame
-                lock2.acquire()
+                # lock2.acquire()
                 frameAsText = convertQueue.get()
-                lock2.release()
+                # lock2.release()
                 # decode the frame
                 jpgRawImage = base64.b64decode(frameAsText)
 
