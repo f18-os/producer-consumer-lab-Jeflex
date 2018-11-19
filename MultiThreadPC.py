@@ -117,6 +117,8 @@ class ConsumerThreadDisplay(threading.Thread):
 
         # initialize frame count
         count = 0
+        startTime = time.time()
+        frameDelay   = 42
         while True:
             if not convertQueue.empty():
                 # get the next frame
@@ -136,10 +138,16 @@ class ConsumerThreadDisplay(threading.Thread):
 
                 # display the image in a window called "video" and wait 42ms
                 # before displaying the next frame
-                cv2.imshow("Video", img)
-                if cv2.waitKey(42) and 0xFF == ord("q"):
-                    break
+                elapsedTime = int((time.time() - startTime) * 1000)
+                # print("Time to process frame {} ms".format(elapsedTime))
 
+                # determine the amount of time to wait, also
+                # make sure we don't go into negative time
+                timeToWait = max(1, frameDelay - elapsedTime)
+                cv2.imshow("Video", img)
+                if cv2.waitKey(timeToWait) and 0xFF == ord("q"):
+                    break
+                startTime = time.time()
                 count += 1
         return
 
