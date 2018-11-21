@@ -13,14 +13,49 @@ filename = 'clip.mp4'
 
 BUF_SIZE = 10
 
-# shared queue
-extractionQueue = queue.Queue(BUF_SIZE)
-convertQueue = queue.Queue(BUF_SIZE)
-
 # lock1 = threading.RLock()
 # lock2 = threading.RLock()
+Full = threading.Semaphore(0)
+Empty = threading.Semaphore(BUF_SIZE)
+Qlock = threading.RLock()
 
 
+class pcQueue():
+    def __init__(self):
+        self.pcQueue = []
+        self.Full = threading.Semaphore(0)
+        self.Empty = threading.Semaphore(BUF_SIZE)
+        self.Qlock = threading.RLock()
+
+    def put(self,v):
+        self.Empty.acquire()
+        self.Qlock.acquire()
+        self.pcQueue.append(v)
+        self.Qlock.release()
+        self.Full.release()
+
+    def get(self):
+        self.Full.acquire()
+        self.Qlock.acquire()
+        V = self.pcQueue.pop(0)
+        self.Qlock.release()
+        self.Empty.release()
+        return V
+
+    def full(self):
+        if len(self.pcQueue) == BUF_SIZE:
+            return True
+        else:
+            return False
+
+    def empty(self):
+        if len(self.pcQueue) == 0:
+            return True
+        else:
+            return False
+# shared queue
+extractionQueue = pcQueue()
+convertQueue = pcQueue()
 
 
 class ProducerThreadExtract(threading.Thread):
